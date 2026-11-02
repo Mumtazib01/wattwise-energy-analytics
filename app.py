@@ -162,7 +162,10 @@ with overview_tab:
         labels={"datetime": "Date and time", selected_metric_col: selected_metric_name},
         color_discrete_sequence=["#1f77b4"],
     )
-    trend_fig.add_vline(x=peak_record["datetime"], line_dash="dash", line_color="red", annotation_text="Peak")
+    # Plotly's date-axis vline logic breaks when passed a pandas Timestamp directly,
+    # so use milliseconds since the Unix epoch for the vertical marker.
+    peak_epoch_ms = float(peak_record["datetime"].value) / 1_000_000
+    trend_fig.add_vline(x=peak_epoch_ms, line_dash="dash", line_color="red", annotation_text="Peak")
     trend_fig.update_layout(hovermode="x unified", template="plotly_white")
     st.plotly_chart(trend_fig, use_container_width=True)
 
